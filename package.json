@@ -1,0 +1,21 @@
+{
+  "name": "tower-tide",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A mobile-first web strategy game: link towers, send your people, conquer the map.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "balance": "BALANCE=1 vitest run --disableConsoleIntercept",
+    "icons": "node scripts/icons.cjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^8.3.7",
+    "vitest": "^5.1.0"
+  }
+}
