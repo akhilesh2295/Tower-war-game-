@@ -1,6 +1,7 @@
 import {
   ARCHER,
   GROW_INTERVAL,
+  HARD_CAP,
   LINK_DROP_MARGIN,
   NEUTRAL,
   PLAYER,
@@ -65,11 +66,14 @@ export class World {
   status: GameStatus = 'playing';
   /** All non-neutral owners that started in the level. */
   readonly owners: OwnerId[];
+  /** Growth cap for this level. */
+  readonly cap: number;
   private alive = new Set<OwnerId>();
   private nextId = 1;
 
   constructor(level: LevelDef) {
     this.level = level;
+    this.cap = Math.min(HARD_CAP, level.maxCount ?? TOWER_CAP);
     this.towers = level.towers.map((t, i) => ({
       id: i,
       x: t.x * WORLD_W,
@@ -197,12 +201,12 @@ export class World {
   private grow(dt: number): void {
     for (const t of this.towers) {
       if (t.owner === NEUTRAL) continue;
-      if (t.count >= TOWER_CAP) {
+      if (t.count >= this.cap) {
         t.growAcc = 0;
         continue;
       }
       t.growAcc += dt;
-      while (t.growAcc >= GROW_INTERVAL && t.count < TOWER_CAP) {
+      while (t.growAcc >= GROW_INTERVAL && t.count < this.cap) {
         t.growAcc -= GROW_INTERVAL;
         t.count++;
       }
@@ -253,7 +257,7 @@ export class World {
   private arrive(u: Unit): void {
     const t = this.towers[u.to];
     if (t.owner === u.owner) {
-      t.count++;
+      t.count = Math.min(HARD_CAP, t.count + 1);
       return;
     }
     t.count--;

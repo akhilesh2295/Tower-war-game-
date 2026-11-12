@@ -53,7 +53,7 @@ export class App {
     $('#btn-pause').addEventListener('click', () => this.pause());
     this.el.speed.addEventListener('click', () => this.toggleSpeed());
 
-    const onResize = () => this.renderer.resize();
+    const onResize = () => this.fit();
     window.addEventListener('resize', onResize);
     window.addEventListener('orientationchange', () => setTimeout(onResize, 200));
     new ResizeObserver(onResize).observe(this.renderer.canvas);
@@ -65,11 +65,19 @@ export class App {
     requestAnimationFrame(this.frame);
   }
 
+  /** Fit the board below the floating HUD (only reserved while playing). */
+  private fit() {
+    const inset = this.screen === 'game' ? this.el.hud.getBoundingClientRect().bottom : 0;
+    this.renderer.resize(inset);
+  }
+
   /* ------------------------------ screens ------------------------------ */
 
   private setScreen(s: Screen) {
+    const changed = this.screen !== s;
     this.screen = s;
     document.body.dataset.screen = s;
+    if (changed) this.fit();
   }
 
   private modal(html: string) {
@@ -91,7 +99,7 @@ export class App {
     if (this.demo && this.demo.world.status === 'playing') return;
     const seed = Math.floor(Math.random() * 100000) + 1;
     this.demo = new Game(generateLevel({ seed, bots: 3, difficulty: 'normal' }), seed, 'normal');
-    this.renderer.resize();
+    this.fit();
   }
 
   showMenu() {
@@ -106,7 +114,7 @@ export class App {
       <h1>Tower Tide</h1>
       <p class="sub">Link your towers. Send your people. Take the map.</p>
       <button class="btn primary" id="m-play">Play <small>${cleared}/${LEVELS.length}</small></button>
-      <button class="btn" id="m-skirmish">Random Skirmish</button>
+      <button class="btn blue" id="m-skirmish">Random Skirmish</button>
       <button class="btn" id="m-how">How to Play</button>
       <button class="btn ghost" id="m-sound">Sound: ${this.progress.settings.sound ? 'On' : 'Off'}</button>
     `);
@@ -127,10 +135,10 @@ export class App {
       <ul class="how">
         <li><b>Drag</b> from your <span class="dot" style="--c:${team(1).main}"></span> tower to any tower to send people along a link.</li>
         <li><b>Grey</b> towers are neutral: the number is how many people it takes to capture them.</li>
-        <li>Your towers <b>grow</b> over time. At <b>10</b> they unlock a 2nd link, at <b>20</b> a 3rd (max 30).</li>
+        <li>Your towers <b>grow</b> over time. At <b>10</b> they unlock a 2nd link, at <b>20</b> a 3rd. The dots on a roof show its links: <b>white = free</b>.</li>
         <li><b>Swipe</b> across your link to cut it. Drag the other way to reverse it.</li>
         <li>Opposing streams on the same link <b>cancel out</b>.</li>
-        <li><b>Archer</b> towers (spiked) shoot enemies in range. More people = longer range.</li>
+        <li><b>Watchtowers</b> shoot enemies in range. More people = longer range.</li>
         <li>Take every rival tower to win!</li>
       </ul>
       <button class="btn primary" id="h-back">Got it</button>
@@ -185,7 +193,7 @@ export class App {
     this.input.enabled = true;
     const label = this.levelIndex >= 0 ? `${this.levelIndex + 1}. ${level.name}` : level.name;
     this.el.title.textContent = label;
-    this.renderer.resize();
+    this.fit();
     this.updateHud();
     this.showIntro(level, label);
   }
@@ -313,7 +321,7 @@ export class App {
     const total = parts.reduce((s, p) => s + p.n, 0) || 1;
     this.el.bar.innerHTML = parts
       .filter((p) => p.n > 0)
-      .map((p) => `<span style="flex:${p.n / total};background:${team(p.o).main}" title="${team(p.o).name}: ${p.n}"></span>`)
+      .map((p) => `<span style="flex:${p.n / total};background:${team(p.o).main}" title="${team(p.o).name}">${p.n}</span>`)
       .join('');
     this.el.timer.textContent = fmtTime(w.time);
   }

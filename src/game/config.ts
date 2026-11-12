@@ -14,8 +14,17 @@ export const UNIT_SPEED = 150;
 export const SEND_INTERVAL = 0.5;
 /** Owned towers gain one person every GROW_INTERVAL seconds... */
 export const GROW_INTERVAL = 1.0;
-/** ...until they reach TOWER_CAP (reinforcements can still push past it). */
+/**
+ * ...until they reach the level's growth cap (LevelDef.maxCount, default
+ * TOWER_CAP). A tower below its cap starts regenerating again.
+ */
 export const TOWER_CAP = 30;
+/**
+ * Absolute ceiling for any tower. Reinforcements may overfill a tower past
+ * its growth cap up to this number; extra arrivals are lost. This keeps
+ * the number of people on the board bounded.
+ */
+export const HARD_CAP = 99;
 
 /**
  * Tower levels. A tower with at least `min` people is at that level and may

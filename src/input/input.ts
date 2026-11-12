@@ -44,11 +44,12 @@ export class InputController {
   private towerAt(p: Vec): number | null {
     const w = this.getWorld();
     if (!w) return null;
-    const hit = Math.max(TOWER_RADIUS * 1.25, 28 * this.renderer.worldPerPx);
+    const hit = Math.max(TOWER_RADIUS * 1.35, 30 * this.renderer.worldPerPx);
     let best: number | null = null;
     let bestD = Infinity;
     for (const t of w.towers) {
-      const d = dist(t, p);
+      // Buildings rise above their ground point, so aim a little higher.
+      const d = dist({ x: t.x, y: t.y - 12 }, p);
       if (d < hit && d < bestD) {
         best = t.id;
         bestD = d;

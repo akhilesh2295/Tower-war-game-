@@ -1,4 +1,4 @@
-import { PLAYER, TOWER_RADIUS, WORLD_H, WORLD_W } from '../game/config';
+import { HARD_CAP, PLAYER, TOWER_RADIUS, WORLD_H, WORLD_W } from '../game/config';
 import type { LevelDef, TowerDef, TowerKind } from '../game/types';
 
 /** Compact tower constructor used by level files: t(x, y, owner, count, kind?). */
@@ -16,6 +16,8 @@ export function validateLevel(level: LevelDef): string[] {
   if (!level.id) errs.push('level is missing an id');
   if (!level.name) errs.push(`${where}: missing name`);
   if (!(level.parTime > 0)) errs.push(`${where}: parTime must be > 0`);
+  if (level.maxCount !== undefined && !(level.maxCount >= 10 && level.maxCount <= HARD_CAP))
+    errs.push(`${where}: maxCount must be between 10 and ${HARD_CAP}`);
 
   const owners = new Set(level.towers.map((tw) => tw.owner));
   if (!owners.has(PLAYER)) errs.push(`${where}: player (owner ${PLAYER}) has no tower`);

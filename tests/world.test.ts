@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { GROW_INTERVAL, SEND_INTERVAL, TOWER_CAP } from '../src/game/config';
+import { GROW_INTERVAL, HARD_CAP, SEND_INTERVAL, TOWER_CAP } from '../src/game/config';
 import type { LevelDef } from '../src/game/types';
 import { maxLinks, World } from '../src/game/world';
 import { t } from '../src/levels/schema';
@@ -118,5 +118,26 @@ describe('World', () => {
     w.addLink(2, 1, 0);
     run(w, 10);
     expect(w.status).toBe('lost');
+  });
+});
+
+describe('caps', () => {
+  it('uses the level growth cap and regenerates when below it', () => {
+    const w = new World({ ...lvl([t(0.2, 0.8, 1, 18), t(0.8, 0.2, 2, 5)]), maxCount: 20 });
+    run(w, 5);
+    expect(w.towers[0].count).toBe(20);
+    w.addLink(1, 0, 1);
+    run(w, 1.1);
+    expect(w.towers[0].count).toBeLessThan(20);
+    w.removeLink(w.links[0]);
+    run(w, 5);
+    expect(w.towers[0].count).toBe(20);
+  });
+
+  it('never lets reinforcements push a tower past the hard cap', () => {
+    const w = new World(lvl([t(0.5, 0.9, 1, 95), t(0.5, 0.8, 1, 99), t(0.5, 0.1, 2, 5)]));
+    w.addLink(1, 0, 1);
+    run(w, 10);
+    expect(w.towers[1].count).toBe(HARD_CAP);
   });
 });

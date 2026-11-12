@@ -1,4 +1,4 @@
-import { GROW_INTERVAL, NEUTRAL, PLAYER, TOWER_CAP, UNIT_SPEED } from './config';
+import { GROW_INTERVAL, NEUTRAL, PLAYER, UNIT_SPEED } from './config';
 import { dist, pointSegDist } from './geometry';
 import { Rng } from './rng';
 import type { Difficulty, OwnerId, Tower } from './types';
@@ -97,7 +97,7 @@ export class BotBrain {
       if (dst.owner === me) {
         // Reinforcement link: stop once the target is safe and full.
         const safe = (threat.get(dst.id) ?? -99) < -5;
-        if (safe && (dst.count >= TOWER_CAP - 2 || src.count < 3)) w.removeLink(l);
+        if (safe && (dst.count >= w.cap - 2 || src.count < 3)) w.removeLink(l);
         else if (this.p.defends && (threat.get(src.id) ?? 0) > 0) w.removeLink(l);
         continue;
       }
@@ -164,7 +164,7 @@ export class BotBrain {
       }
     }
     if (best) return best;
-    if (!this.p.feeds || src.count < TOWER_CAP - 4) return null;
+    if (!this.p.feeds || src.count < w.cap - 4) return null;
 
     // 2) Full back-line tower: feed the friend nearest to an enemy.
     const enemies = w.towers.filter((t) => t.owner !== me);
@@ -174,7 +174,7 @@ export class BotBrain {
     let feed: Tower | null = null;
     let feedFront = srcFront - 60;
     for (const t of mine) {
-      if (t === src || t.count >= TOWER_CAP || w.findLink(src.id, t.id) || w.findLink(t.id, src.id)) continue;
+      if (t === src || t.count >= w.cap || w.findLink(src.id, t.id) || w.findLink(t.id, src.id)) continue;
       const f = frontness(t);
       if (f < feedFront) {
         feed = t;

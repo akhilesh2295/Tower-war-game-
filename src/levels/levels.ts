@@ -5,7 +5,8 @@ import { t } from './schema';
  * Level files are plain data. Coordinates are normalised (0..1) on a portrait
  * board; the player usually starts at the bottom. Owners: 0 neutral, 1 player,
  * 2+ bots. For neutral towers `count` is the number of people needed to
- * capture them. Add a level by appending an object here — validateLevel()
+ * capture them. `maxCount` (default 30) is where towers stop growing.
+ * Add a level by appending an object here — validateLevel()
  * and the test-suite check it automatically.
  */
 export const LEVELS: LevelDef[] = [
@@ -14,6 +15,7 @@ export const LEVELS: LevelDef[] = [
     name: 'First Steps',
     hint: 'Drag from your blue tower to another tower to send people. Grey towers are captured when that many people arrive.',
     parTime: 60,
+    maxCount: 20,
     bots: [{ owner: 2, difficulty: 'easy' }],
     towers: [
       t(0.5, 0.84, 1, 12),
@@ -83,7 +85,7 @@ export const LEVELS: LevelDef[] = [
   {
     id: 'l05',
     name: 'Arrow Tower',
-    hint: 'Archer towers (spiked) shoot enemy people passing nearby. The more people inside, the longer the range.',
+    hint: 'Watchtowers shoot enemy people passing nearby. The more people inside, the longer the range.',
     parTime: 130,
     bots: [{ owner: 2, difficulty: 'normal' }],
     towers: [
@@ -150,6 +152,7 @@ export const LEVELS: LevelDef[] = [
     name: 'Outnumbered',
     hint: 'Your rival holds big towers. Pool your small towers into one strong stream.',
     parTime: 180,
+    maxCount: 40,
     bots: [{ owner: 2, difficulty: 'hard' }],
     towers: [
       t(0.15, 0.88, 1, 8),
@@ -199,6 +202,7 @@ export const LEVELS: LevelDef[] = [
     name: 'Tower Lords',
     hint: 'The final test. Three rivals, three archer towers. Good luck.',
     parTime: 260,
+    maxCount: 50,
     bots: [
       { owner: 2, difficulty: 'hard' },
       { owner: 3, difficulty: 'normal' },

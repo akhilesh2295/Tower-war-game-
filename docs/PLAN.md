@@ -22,7 +22,10 @@ and enemy towers, and take the map.
 - **Owners:** neutral (grey), the player (blue), bots (red / green / gold / violet).
 - **Towers** start with a number of people. For **neutral** towers that number is the
   *capture cost* (e.g. 5 / 10 / 15). It drops by one for each person who arrives, and the tower flips when it reaches 0.
-- **Growth:** owned towers gain +1 person per second, up to **30**. Reinforcements can push a tower past 30.
+- **Growth:** owned towers gain +1 person per second up to the level's growth cap
+  (`maxCount`, default **30**; e.g. level 1 caps at 20, level 10 at 50). A tower that drops below
+  its cap starts regenerating again. Reinforcements can overfill a tower, but never past the
+  absolute **HARD_CAP = 99**, so the board can never fill up with unbounded people.
 - **Levels and links:** a tower holds **1** outgoing link below 10 people, **2** from 10 and **3** from 20.
   An unlocked link is only lost when the tower falls 5 below the threshold (hysteresis), so
   sending people doesn't instantly break a link you just unlocked.
@@ -30,12 +33,16 @@ and enemy towers, and take the map.
   reverse a link; swipe across a link to cut it (people already walking keep going).
 - **Clashes:** opposing streams on the same pair of towers annihilate one-for-one where they meet.
 - **Arrival:** at a friendly tower it's +1; at an enemy or neutral tower it's −1. At 0 the tower is captured, and its old outgoing links are removed.
-- **Archer towers** (spiked) shoot enemy people within range, whether passing by or attacking.
+- **Archer towers** (watchtowers) shoot enemy people within range, whether passing by or attacking.
   Range = 150 + 7 × people (max 380). Neutral archers don't shoot.
 - **Win:** every bot has no towers and no people left. **Lose:** the same happens to you.
 - **Stars:** 3 for finishing under par time, 2 under 2× par, 1 otherwise. Clearing a level unlocks the next one.
 
 All numbers live in `src/game/config.ts`.
+
+- **Visuals:** a building gains a storey at each tower level. The dots on the roof are its link
+  slots: white means another connection is available, dim means in use. The count turns gold at
+  the growth cap. The bar at the top shows each team's people on the board.
 
 ## 3. Technology decision
 

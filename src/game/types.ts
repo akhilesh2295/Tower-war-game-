@@ -29,6 +29,8 @@ export interface LevelDef {
   towers: TowerDef[];
   /** Seconds to finish for three stars (two stars at 2x). */
   parTime: number;
+  /** Towers stop growing at this many people (default 30, max HARD_CAP). */
+  maxCount?: number;
 }
 
 /* ---------------------------- Runtime state ---------------------------- */
